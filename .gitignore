@@ -1,0 +1,14 @@
+# Maven build folder
+target/
+
+#NetBeans project files
+nbproject/private/
+nbbuild/
+dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
