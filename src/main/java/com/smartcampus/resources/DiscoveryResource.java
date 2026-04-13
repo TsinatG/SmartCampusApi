@@ -10,12 +10,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/")
+@Path("discovery")
 public class DiscoveryResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getApiInfo() {
         return "{ \"version\": \"v1\", \"resources\": { \"rooms\": \"/api/v1/rooms\", \"sensors\": \"/api/v1/sensors\" } }";
+    
     }
 }

@@ -4,7 +4,7 @@
  */
 package com.smartcampus.resources;
 
-import com.smartcampus.model.Sensor;
+import com.smartcampus.model.Room;
 import java.util.Collection;
 import java.util.HashMap;
 import javax.ws.rs.GET;
@@ -15,36 +15,32 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 
-@Path("/sensors")
-public class SensorResource {
+@Path("/sensorrooms")
+public class SensorRoomResource {
 
-    // In-memory storage
-    private static final HashMap<Integer, Sensor> sensors = new HashMap<>();
+    private static final HashMap<Integer, Room> rooms = new HashMap<>();
 
-    // GET all sensors
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Sensor> getSensors() {
-        return sensors.values();
+    public Collection<Room> getRooms() {
+        return rooms.values();
     }
 
-    // POST create sensor
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String createSensor(Sensor sensor) {
+    public String createRoom(Room room) {
 
-        sensors.put(sensor.getId(), sensor);
+        rooms.put(room.getId(), room);
 
-        return "Sensor created successfully";
+        return "Room created successfully";
     }
 
-    // GET sensor by ID
     @GET
-    @Path("/{sensorId}")
+    @Path("/{roomId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Sensor getSensor(@PathParam("sensorId") int sensorId) {
+    public Room getRoom(@PathParam("roomId") int roomId) {
 
-        return sensors.get(sensorId);
+        return rooms.get(roomId);
     }
 }

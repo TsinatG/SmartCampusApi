@@ -4,10 +4,7 @@
  */
 package com.smartcampus.resources;
 
-/**
- *
- * @author Abnet
- */
+
 public class SensorReadingResource {
     
 }

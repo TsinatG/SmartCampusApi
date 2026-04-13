@@ -11,7 +11,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class MyApplicationConfig extends ResourceConfig {
 
     public MyApplicationConfig() {
-        register(HelloWorldResource.class);
+        register(SensorRoomResource.class);
+        register(SensorResource.class);
     }
 
 }
