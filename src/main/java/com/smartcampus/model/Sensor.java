@@ -5,52 +5,64 @@
 package com.smartcampus.model;
 
 public class Sensor {
-
-    private int id;
+    private String id;
     private String type;
     private String status;
-    private double currentValue;
-    private int roomId;
+    private double value;
+    private int roomId; 
 
+    // 1. Constructor
     public Sensor() {}
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public Sensor(String id, String type, String status, double value, int roomId) {
         this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
         this.type = type;
+        this.status = status;
+        this.value = value;
+        this.roomId = roomId;
+    }
+
+    // 2. GETTERS
+    public String getId() { 
+        return id; 
+    }
+
+    public String getType() { 
+        return type; 
     }
 
     public String getStatus() {
         return status;
     }
 
+    public double getValue() {
+        return value;
+    }
+
+    public int getRoomId() { 
+        return roomId; 
+    }
+
+    // 3. SETTERS
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public double getCurrentValue() {
-        return currentValue;
-    }
-
-    public void setCurrentValue(double currentValue) {
-        this.currentValue = currentValue;
-    }
-
-    public int getRoomId() {
-        return roomId;
+    public void setValue(double value) {
+        this.value = value;
     }
 
     public void setRoomId(int roomId) {
         this.roomId = roomId;
     }
-}
+
+} 
+

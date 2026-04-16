@@ -14,7 +14,7 @@ public class Room {
     private int capacity;    // max number of people
 
     // list of sensor IDs in this room
-    private List<Integer> sensorIds = new ArrayList<>();
+    private List<String> sensorIds = new ArrayList<>();
 
     // Empty constructor (REQUIRED for JSON)
     public Room() {
@@ -25,6 +25,7 @@ public class Room {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
+        this.sensorIds = new ArrayList<>();
     }
 
     // GETTERS AND SETTERS
@@ -53,11 +54,11 @@ public class Room {
         this.capacity = capacity;
     }
 
-    public List<Integer> getSensorIds() {
+    public List<String> getSensorIds() {
         return sensorIds;
     }
 
-    public void setSensorIds(List<Integer> sensorIds) {
+    public void setSensorIds(List<String> sensorIds) {
         this.sensorIds = sensorIds;
     }
 }
