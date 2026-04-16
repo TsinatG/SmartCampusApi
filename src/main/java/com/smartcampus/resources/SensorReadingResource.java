@@ -4,7 +4,13 @@
  */
 package com.smartcampus.resources;
 
+import com.smartcampus.model.Sensor;
+
 
 public class SensorReadingResource {
+
+    SensorReadingResource(String sensorId, Sensor sensor) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

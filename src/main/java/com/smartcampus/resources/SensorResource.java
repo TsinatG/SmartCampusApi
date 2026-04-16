@@ -15,7 +15,8 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
-    private static final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
+    // Storage for sensors
+    public static final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
 
     static {
         Sensor s1 = new Sensor("TEMP001", "Temperature", "ACTIVE", 22.5, 301);
@@ -24,7 +25,26 @@ public class SensorResource {
         sensors.put(s2.getId(), s2);
     }
 
-    // 1. GET all sensors (with optional type filter)
+    /**
+     * SUB-RESOURCE LOCATOR
+     * This method handles the path /sensors/{sensorId}/readings 
+     * and hands it over to the SensorReadingResource class.
+     * @param sensorId
+     * @return 
+     */
+    @Path("/{sensorId}/readings")
+    public SensorReadingResource getReadingResource(@PathParam("sensorId") String sensorId) {
+        Sensor sensor = sensors.get(sensorId);
+        if (sensor == null) {
+            // Throwing this exception immediately returns a 404 to the user
+            throw new WebApplicationException("Sensor not found", Response.Status.NOT_FOUND);
+        }
+        // Return the sub-resource class, passing the sensor object
+        return new SensorReadingResource(sensorId, sensor);
+    }
+
+    // --- EXISTING SENSOR CRUD METHODS ---
+
     @GET
     public Collection<Sensor> getSensors(@QueryParam("type") String type) {
         if (type == null || type.isEmpty()) {
@@ -35,7 +55,6 @@ public class SensorResource {
                 .collect(Collectors.toList());
     }
 
-    // 2. GET a single sensor by ID
     @GET
     @Path("/{id}")
     public Response getSensorById(@PathParam("id") String id) {
@@ -46,7 +65,6 @@ public class SensorResource {
         return Response.ok(sensor).build();
     }
 
-    // 3. GET all sensors in a specific room
     @GET
     @Path("/room/{roomId}")
     public Collection<Sensor> getSensorsByRoom(@PathParam("roomId") int roomId) {
@@ -55,20 +73,15 @@ public class SensorResource {
                 .collect(Collectors.toList());
     }
 
-    // 4. POST - Add a new sensor
     @POST
     public Response addSensor(Sensor sensor) {
-        // Check if sensor ID already exists
         if (sensors.containsKey(sensor.getId())) {
-            return Response.status(Response.Status.CONFLICT)
-                           .entity("Sensor ID already exists").build();
+            return Response.status(Response.Status.CONFLICT).entity("Sensor ID already exists").build();
         }
 
-        // Check if the room exists
         Room room = RoomResource.rooms.get(sensor.getRoomId());
         if (room == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                           .entity("Room does not exist").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Room does not exist").build();
         }
 
         sensors.put(sensor.getId(), sensor);
@@ -76,7 +89,6 @@ public class SensorResource {
         return Response.status(Response.Status.CREATED).entity(sensor).build();
     }
 
-    // 5. PUT - Update an existing sensor (e.g., change its value or status)
     @PUT
     @Path("/{id}")
     public Response updateSensor(@PathParam("id") String id, Sensor updatedSensor) {
@@ -84,17 +96,12 @@ public class SensorResource {
         if (existing == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Sensor not found").build();
         }
-
-        // Update fields
         existing.setType(updatedSensor.getType());
         existing.setStatus(updatedSensor.getStatus());
         existing.setValue(updatedSensor.getValue());
-        // Note: Usually we don't allow changing RoomId here to avoid breaking the Room list
-
         return Response.ok(existing).build();
     }
 
-    // 6. DELETE - Remove a sensor
     @DELETE
     @Path("/{id}")
     public Response deleteSensor(@PathParam("id") String id) {
@@ -102,13 +109,10 @@ public class SensorResource {
         if (removed == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        // Also clean up the Room's list of sensor IDs
         Room room = RoomResource.rooms.get(removed.getRoomId());
         if (room != null) {
             room.getSensorIds().remove(id);
         }
-
-        return Response.noContent().build(); // Status 204
+        return Response.noContent().build();
     }
 }
