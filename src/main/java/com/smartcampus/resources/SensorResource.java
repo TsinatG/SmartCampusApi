@@ -1,50 +1,114 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.smartcampus.resources;
 
 import com.smartcampus.model.Sensor;
+import com.smartcampus.model.Room;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Collection;
-import java.util.HashMap;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
+import java.util.stream.Collectors;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/sensors")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class SensorResource {
 
-    // In-memory storage
-    private static final HashMap<Integer, Sensor> sensors = new HashMap<>();
+    private static final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
 
-    // GET all sensors
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Sensor> getSensors() {
-        return sensors.values();
+    static {
+        Sensor s1 = new Sensor("TEMP001", "Temperature", "ACTIVE", 22.5, 301);
+        Sensor s2 = new Sensor("CO2-001", "CO2", "ACTIVE", 400.0, 101);
+        sensors.put(s1.getId(), s1);
+        sensors.put(s2.getId(), s2);
     }
 
-    // POST create sensor
+    // 1. GET all sensors (with optional type filter)
+    @GET
+    public Collection<Sensor> getSensors(@QueryParam("type") String type) {
+        if (type == null || type.isEmpty()) {
+            return sensors.values();
+        }
+        return sensors.values().stream()
+                .filter(s -> s.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
+
+    // 2. GET a single sensor by ID
+    @GET
+    @Path("/{id}")
+    public Response getSensorById(@PathParam("id") String id) {
+        Sensor sensor = sensors.get(id);
+        if (sensor == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Sensor not found").build();
+        }
+        return Response.ok(sensor).build();
+    }
+
+    // 3. GET all sensors in a specific room
+    @GET
+    @Path("/room/{roomId}")
+    public Collection<Sensor> getSensorsByRoom(@PathParam("roomId") int roomId) {
+        return sensors.values().stream()
+                .filter(s -> s.getRoomId() == roomId)
+                .collect(Collectors.toList());
+    }
+
+    // 4. POST - Add a new sensor
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String createSensor(Sensor sensor) {
+    public Response addSensor(Sensor sensor) {
+        // Check if sensor ID already exists
+        if (sensors.containsKey(sensor.getId())) {
+            return Response.status(Response.Status.CONFLICT)
+                           .entity("Sensor ID already exists").build();
+        }
+
+        // Check if the room exists
+        Room room = RoomResource.rooms.get(sensor.getRoomId());
+        if (room == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Room does not exist").build();
+        }
 
         sensors.put(sensor.getId(), sensor);
-
-        return "Sensor created successfully";
+        room.getSensorIds().add(sensor.getId());
+        return Response.status(Response.Status.CREATED).entity(sensor).build();
     }
 
-    // GET sensor by ID
-    @GET
-    @Path("/{sensorId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Sensor getSensor(@PathParam("sensorId") int sensorId) {
+    // 5. PUT - Update an existing sensor (e.g., change its value or status)
+    @PUT
+    @Path("/{id}")
+    public Response updateSensor(@PathParam("id") String id, Sensor updatedSensor) {
+        Sensor existing = sensors.get(id);
+        if (existing == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Sensor not found").build();
+        }
 
-        return sensors.get(sensorId);
+        // Update fields
+        existing.setType(updatedSensor.getType());
+        existing.setStatus(updatedSensor.getStatus());
+        existing.setValue(updatedSensor.getValue());
+        // Note: Usually we don't allow changing RoomId here to avoid breaking the Room list
+
+        return Response.ok(existing).build();
+    }
+
+    // 6. DELETE - Remove a sensor
+    @DELETE
+    @Path("/{id}")
+    public Response deleteSensor(@PathParam("id") String id) {
+        Sensor removed = sensors.remove(id);
+        if (removed == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        // Also clean up the Room's list of sensor IDs
+        Room room = RoomResource.rooms.get(removed.getRoomId());
+        if (room != null) {
+            room.getSensorIds().remove(id);
+        }
+
+        return Response.noContent().build(); // Status 204
     }
 }

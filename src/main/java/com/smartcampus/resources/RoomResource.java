@@ -19,19 +19,22 @@ import javax.ws.rs.core.Response;
 public class RoomResource {
 
     // 1. Change the Map key to Integer to match Room.getId()
-    private static Map<Integer, Room> rooms = new HashMap<>();
+    public static Map<Integer, Room> rooms = new HashMap<>();
 
     static {
         // IDs are now ints, so no quotes needed
         Room r1 = new Room(301, "Library Quiet Study", 50);
         Room r2 = new Room(101, "Engineering Lab", 30);
 
-        // r1.getSensorIds() is a List<Integer>, so we add an int
-        // Note: Use '1' instead of '001' (001 is octal notation in Java)
-        r1.getSensorIds().add(1); 
+        
+       r1.getSensorIds().add("TEMP-001");
+       r2.getSensorIds().add("CO2-001");
+       
+       
 
         rooms.put(r1.getId(), r1);
         rooms.put(r2.getId(), r2);
+       
     }
 
     @GET
