@@ -2,10 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
 package com.smartcampus.resources;
 
 import com.smartcampus.model.Sensor;
 import com.smartcampus.model.SensorReading;
+import com.smartcampus.exceptions.SensorUnavailableException; // Import your custom exception
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ws.rs.*;
@@ -19,7 +21,6 @@ public class SensorReadingResource {
     private String sensorId;
     private Sensor parentSensor;
     
-    // Static storage for history: Map<SensorID, List of Readings>
     private static final Map<String, List<SensorReading>> readingsHistory = new ConcurrentHashMap<>();
 
     public SensorReadingResource(String sensorId, Sensor parentSensor) {
@@ -34,16 +35,16 @@ public class SensorReadingResource {
 
     @POST
     public Response addReading(SensorReading reading) {
-        // 1. Ensure the list exists for this sensor
+        // --- PART 5 TASK 3: Check for MAINTENANCE status ---
+        if ("MAINTENANCE".equalsIgnoreCase(parentSensor.getStatus())) {
+            throw new SensorUnavailableException("Sensor " + sensorId + " is currently under maintenance and cannot accept readings.");
+        }
+
         readingsHistory.putIfAbsent(sensorId, new ArrayList<>());
-        
-        // 2. Set the timestamp to now
         reading.setTimestamp(new Date());
-        
-        // 3. Add to history
         readingsHistory.get(sensorId).add(reading);
 
-        // 4. SIDE EFFECT: Update the parent sensor's current value
+        // SIDE EFFECT: Update the parent sensor object
         parentSensor.setValue(reading.getValue());
 
         return Response.status(Response.Status.CREATED).entity(reading).build();

@@ -1,5 +1,6 @@
 package com.smartcampus.resources;
 
+import com.smartcampus.exceptions.LinkedResourceNotFoundException;
 import com.smartcampus.model.Sensor;
 import com.smartcampus.model.Room;
 import java.util.Map;
@@ -81,8 +82,8 @@ public class SensorResource {
 
         Room room = RoomResource.rooms.get(sensor.getRoomId());
         if (room == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Room does not exist").build();
-        }
+        throw new LinkedResourceNotFoundException("Room ID " + sensor.getRoomId() + " does not exist.");
+}
 
         sensors.put(sensor.getId(), sensor);
         room.getSensorIds().add(sensor.getId());
