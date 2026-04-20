@@ -10,13 +10,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-//409 Mapper
-@Provider
+@Provider 
 public class RoomNotEmptyMapper implements ExceptionMapper<RoomNotEmptyException> {
+
     @Override
-    public Response toResponse(RoomNotEmptyException e) {
-        return Response.status(Response.Status.CONFLICT)
-                .entity("{\"error\": \"" + e.getMessage() + "\"}")
-                .type(MediaType.APPLICATION_JSON).build();
+    public Response toResponse(RoomNotEmptyException exception) {
+        // This converts the Java error into a clean 409 JSON response
+        return Response.status(Response.Status.CONFLICT) // 409
+                .entity("{\"error\": \"" + exception.getMessage() + "\"}")
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 }

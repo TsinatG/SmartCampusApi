@@ -20,7 +20,7 @@ public class SensorResource {
     public static final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
 
     static {
-        Sensor s1 = new Sensor("TEMP001", "Temperature", "ACTIVE", 22.5, 301);
+        Sensor s1 = new Sensor("TEMP001", "Temperature", "MAINTENANCE", 22.5, 301);
         Sensor s2 = new Sensor("CO2-001", "CO2", "ACTIVE", 400.0, 101);
         sensors.put(s1.getId(), s1);
         sensors.put(s2.getId(), s2);
@@ -44,7 +44,13 @@ public class SensorResource {
         return new SensorReadingResource(sensorId, sensor);
     }
 
-    // --- EXISTING SENSOR CRUD METHODS ---
+@GET
+@Path("/crash")
+public Response crashTest() {
+    String name = null;
+    name.length(); // This will throw a NullPointerException
+    return Response.ok().build();
+}
 
     @GET
     public Collection<Sensor> getSensors(@QueryParam("type") String type) {
