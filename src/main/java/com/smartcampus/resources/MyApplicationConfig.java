@@ -16,6 +16,8 @@ public class MyApplicationConfig extends ResourceConfig {
         // 1. Manually register the Resources
         register(RoomResource.class); 
         register(SensorResource.class);
+        // Register the Filter
+    register(com.smartcampus.filters.LoggingFilter.class);
         
         // 2. Manually register the Mapper (The most important part)
         register(RoomNotEmptyMapper.class);  //409
