@@ -116,7 +116,6 @@ curl -X DELETE http://localhost:8080/SmartCampusApi/api/v1/rooms/LIB-301
 SmartCampusApi/
 ├── pom.xml               # Maven configuration
 └── src/main/java/
-    └── com/westminster/
         ├── resources/    # Top-level (Rooms, Sensors)
         ├── subresources/ # Locators (Readings)
         ├── models/       # Data Objects (POJOs)
