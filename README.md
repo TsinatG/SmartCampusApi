@@ -125,10 +125,12 @@ SmartCampusApi/
 
 ---
 
- 5. Useful Endpoints
-Method	Route	Description
-GET	/api/v1/	API Discovery Endpoint
-POST	/api/v1/rooms	Register a new campus location
-GET	/api/v1/sensors	List all sensors (supports filtering)
-POST	/api/v1/sensors/{id}/readings	Submit new sensor data
-DELETE	/api/v1/rooms/{id}	Remove a room (checks if empty)
+ ## 5. Useful Endpoints
+
+| Method | Route | Description |
+| :--- | :--- | :--- |
+| **GET** | `/api/v1/` | API Discovery Endpoint |
+| **POST** | `/api/v1/rooms` | Register a new campus location |
+| **GET** | `/api/v1/sensors` | List all sensors (supports filtering) |
+| **POST** | `/api/v1/sensors/{id}/readings` | Submit new sensor data |
+| **DELETE** | `/api/v1/rooms/{id}` | Remove a room (checks if empty) |
